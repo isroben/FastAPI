@@ -4,9 +4,9 @@ from schemas import postCreate
 
 app = FastAPI()
 
-text_post = {1:"This is sample post",
-             2: "Pain and suffering is inevitable for large intelligence and deep heat.",
-             3: "Be optimistic"}
+text_post = {1:{"title": "This is sample post"},
+             2: {"title": "Pain and suffering is inevitable for large intelligence and deep heat."},
+             3: {"title": "Be optimistic"}}
 
 @app.get("/")
 def helloworld():
@@ -27,4 +27,6 @@ def getPost(id: int):
 
 @app.post("/posts")
 def createPost(post: postCreate):
+    newPost = {"title": post.title, "Content":post.content}
     text_post[max(text_post.keys()) +1 ] = {"title": post.title, "Content": post.content}
+    return newPost
