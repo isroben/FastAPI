@@ -1,10 +1,9 @@
-from fastapi import FASTAPI
+from fastapi import FastAPI
 import pydantic
 
 
-app = FASTAPI()
+app = FastAPI()
 
-app.get("/")
-
+@app.get("/")
 def helloworld():
     return {"message" : "Hello world"}
