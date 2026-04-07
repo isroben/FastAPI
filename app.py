@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-import pydantic
+from schemas import postCreate
 
 
 app = FastAPI()
@@ -24,3 +24,7 @@ def getPost(id: int):
         raise HTTPException(status_code=404, detail="Post Not Found")
 
     return text_post.get(id)
+
+@app.post("/posts")
+def createPost(post: postCreate):
+    text_post[max(text_post.keys()) +1 ] = {"title": post.title, "Content": post.content}
