@@ -1,4 +1,11 @@
-import uvicorn
+from fastapi import FastAPI
 
-if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=8080, reload=True)
+app = FastAPI()
+
+@app.get("/")
+def hello():
+    return {"message": "Hello world!"}
+
+@app.get("/about")
+def about():
+    return {"message": "This is demo project."}

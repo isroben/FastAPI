@@ -1,6 +1,3 @@
 fastapi
-numpy
 pydantic
-sqlalchemy
-uvicorn
-
+uvicorn[standard]
