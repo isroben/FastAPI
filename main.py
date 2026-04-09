@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Path, HTTPException
 from dataLoader import loadData
+
 
 app = FastAPI()
 
@@ -20,10 +21,10 @@ def view():
     return data
 
 
-@app.get("/patient/{patientId}")
-def viewPatient(patientId: str):
+@app.get("/patient/{patientId}") # ID wise info retrival
+def viewPatient(patientId: str = Path(..., description="ID of the patient in the DB", example="P001")):
     # load all the patient
     data = loadData()
     if patientId in data:
         return data[patientId]
-    return {"error":"Patient Not Found!"}
+    raise HTTPException(404, "Patient Not Found!")
