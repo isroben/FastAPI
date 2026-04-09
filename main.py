@@ -13,8 +13,17 @@ def hello():
 def about():
     return {"message": "Fully functional api to manage your patient records."}
 
-@app.get("/view")
+@app.get("/view") # gives all data at once
 def view():
     data = loadData()
 
     return data
+
+
+@app.get("/patient/{patientId}")
+def viewPatient(patientId: str):
+    # load all the patient
+    data = loadData()
+    if patientId in data:
+        return data[patientId]
+    return {"error":"Patient Not Found!"}
