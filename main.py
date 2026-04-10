@@ -31,8 +31,8 @@ def viewPatient(patientId: str = Path(..., description="ID of the patient in the
 
 
 @app.get("/sort")
-def sortPatients(sortby: str = Query(..., description="Sort on the basis of height, weight, bmi."), order: str = Query('asc', description="Sort by asc or desc order.")):
-    validFields = ['height', 'weight', 'bmi']
+def sortPatients(sortby: str = Query('name', description="Sort on the basis of height, weight, bmi."), order: str = Query('asc', description="Sort by asc or desc order.")):
+    validFields = ['name', 'height', 'weight', 'bmi']
     validOrders = ['asc', 'desc']
 
     if sortby not in validFields:
