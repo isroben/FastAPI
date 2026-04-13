@@ -11,13 +11,13 @@
     },
     "P002": {
         "name": "Johney Harris",
-        "City": "Washington",
+        "City": "Texas",
         "age": 23,
         "gender": "male",
         "height": 1.95,
         "weight": 75.0,
-        "bmi": 25.06,
-        "verdict": "fit"
+        "bmi": 19.72,
+        "verdict": "Normal"
     },
     "P003": {
         "name": "Arun Thamas",

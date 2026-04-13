@@ -2,13 +2,14 @@ from fastapi import FastAPI, Path, HTTPException, Query
 from dataLoader import loadData, saveData
 from pydantic import BaseModel, Field, computed_field
 import json
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Optional
 from fastapi.responses import JSONResponse
 
 
 app = FastAPI()
 
 class Patient(BaseModel):
+
     id: Annotated[str, Field(..., description="ID of the patient", examples= ["P001"])]
     name: Annotated[str, Field(..., description="Name of the ID", examples=["Jonny"])]
     City: Annotated[str, Field(description="Living city of patient.", examples=["Kathmandu"])]
@@ -34,6 +35,17 @@ class Patient(BaseModel):
         elif self.bmi > 30:
             return "Obese"
     
+
+class PatientUpdate(BaseModel):
+
+    name: Annotated[Optional[str], Field(default=None)]
+    City: Annotated[Optional[str], Field(default=None)]
+    age: Annotated[Optional[int], Field(default=None, gt=0, lt= 120)]
+    gender: Annotated[Optional[Literal['male', 'female', 'others']], Field(default=None)]
+    height: Annotated[Optional[float], Field(default=None, gt=0)]
+    weight: Annotated[Optional[float], Field(default=None, gt=0)]
+
+
 
 @app.get("/")
 def hello():
@@ -97,3 +109,34 @@ def createPatient(patient: Patient):
     return JSONResponse(status_code=201, content={"message": "Patient created successfully."})
 
 
+
+@app.put("/edit/{patientId}")
+def updateInfo(patientId : str, patientUpdate : PatientUpdate):
+    
+    data = loadData()
+
+    if patientId not in data:
+        raise HTTPException(404, "User not found!")
+    
+    existingInfo = data[patientId]
+
+    temp = patientUpdate.model_dump(exclude_unset=True)
+
+    for key, value in temp.items():
+        existingInfo[key] = value
+
+
+    # Existing info -> pydantic object -> updated bmi + verdict
+    existingInfo['id'] = patientId
+    patientObj = Patient(**existingInfo)
+
+    # pydantic obj -> dict
+    existingInfo = patientObj.model_dump(exclude='id')
+
+    # add this dict to data
+    data[patientId] = existingInfo
+
+    # Save data
+    saveData(data)
+
+    return JSONResponse({"message": "Patient updated"}, 200)
