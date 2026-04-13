@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Path, HTTPException, Query
-from dataLoader import loadData
+from dataLoader import loadData, saveData
 from pydantic import BaseModel, Field, computed_field
 import json
-from typing import Annotated, Literal, Dict
+from typing import Annotated, Literal
+from fastapi.responses import JSONResponse
 
 
 app = FastAPI()
@@ -23,6 +24,17 @@ class Patient(BaseModel):
     def BMI(self) ->float:
         bmi = round(self.weight/(self.height**2), 2)
         return bmi
+    
+
+    @computed_field
+    @property
+    def verdict(self) -> str:
+        if self.bmi < 18.5:
+            return "Underweight"
+        elif self.bmi < 25:
+            return "Normal"
+        elif self.bmi > 30:
+            return "Obese"
     
 
 
@@ -69,5 +81,22 @@ def sortPatients(sortby: str = Query('name', description="Sort on the basis of h
     sortedData = sorted(data.values(), key=lambda x: x.get(sortby, 0), reverse=sortOrder)
 
     return sortedData
+
+
+@app.get("/create")
+def createPatient(patient: Patient):
+    # load existing data
+    data = loadData()
+
+    if patient.id in data:
+        raise HTTPException(400, "Patient already exists.")
+    
+    # new patient add to the databse
+    data[patient.id] = patient.model_dump(exclude=["id"])
+
+    # save into the json file
+    saveData(data)
+
+    return JSONResponse(status_code=201, content={"message": "Patient created successfully."})
 
 
