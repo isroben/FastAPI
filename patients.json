@@ -48,5 +48,15 @@
         "weight": 79.0,
         "bmi": 27.39,
         "verdict": "fit"
+    },
+    "P007": {
+        "name": "Harry",
+        "City": "New Delhi",
+        "age": 34,
+        "gender": "male",
+        "height": 3.5,
+        "weight": 74.9,
+        "bmi": 6.11,
+        "verdict": "Underweight"
     }
 }

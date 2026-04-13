@@ -9,19 +9,17 @@ from fastapi.responses import JSONResponse
 app = FastAPI()
 
 class Patient(BaseModel):
-    id: Annotated[str, Field(..., description="ID of the patient", examples= "P001")]
-    name: Annotated[str, Field(..., description="Name of the ID", examples="Jonny")]
-    City: Annotated[str, Field(description="Living city of patient.")]
-    age: Annotated[int, Field(..., gt=0, lt= 120,description="Current age of Patient.")]
-    gender: Annotated[str, Literal['male', 'female', 'others'], Field(..., description='Gender of Patient', examples='40')]
-    height: Annotated[float, Field(..., gt=0, description="Height of patient in mtrs.")]
-    weight: Annotated[float, Field(..., gt=0, description='weight of patient in kgs.')]
-    bmi: float
-    verdict: str
+    id: Annotated[str, Field(..., description="ID of the patient", examples= ["P001"])]
+    name: Annotated[str, Field(..., description="Name of the ID", examples=["Jonny"])]
+    City: Annotated[str, Field(description="Living city of patient.", examples=["Kathmandu"])]
+    age: Annotated[int, Field(..., gt=0, lt= 120,description="Current age of Patient.", examples=[20])]
+    gender: Annotated[Literal['male', 'female', 'others'], Field(..., description='Gender of Patient', examples=['male'])]
+    height: Annotated[float, Field(..., gt=0, description="Height of patient in mtrs.", examples=[10.5])]
+    weight: Annotated[float, Field(..., gt=0, description='weight of patient in kgs.', examples=[70.9])]
 
     @computed_field
     @property
-    def BMI(self) ->float:
+    def bmi(self) ->float:
         bmi = round(self.weight/(self.height**2), 2)
         return bmi
     
@@ -36,7 +34,6 @@ class Patient(BaseModel):
         elif self.bmi > 30:
             return "Obese"
     
-
 
 @app.get("/")
 def hello():
@@ -54,7 +51,7 @@ def view():
 
 
 @app.get("/patient/{patientId}") # ID wise info retrival
-def viewPatient(patientId: str = Path(..., description="ID of the patient in the DB", example="P001")):
+def viewPatient(patientId: str = Path(..., description="ID of the patient in the DB", examples=["P001"])):
     # load all the patient
     data = loadData()
     if patientId in data:
@@ -83,7 +80,7 @@ def sortPatients(sortby: str = Query('name', description="Sort on the basis of h
     return sortedData
 
 
-@app.get("/create")
+@app.post("/create")
 def createPatient(patient: Patient):
     # load existing data
     data = loadData()
