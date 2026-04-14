@@ -32,8 +32,10 @@ class Patient(BaseModel):
             return "Underweight"
         elif self.bmi < 25:
             return "Normal"
-        elif self.bmi > 30:
-            return "Obese"
+        elif self.bmi < 30:
+            return "Normal"
+        else:
+            return "Obsse"
     
 
 class PatientUpdate(BaseModel):
@@ -140,3 +142,18 @@ def updateInfo(patientId : str, patientUpdate : PatientUpdate):
     saveData(data)
 
     return JSONResponse({"message": "Patient updated"}, 200)
+
+
+@app.delete("/delete/{patientId}")
+def deletePatient(patientId : str = Path(..., description="ID of the patient in the DB", examples=["P001"])):
+
+    data = loadData()
+
+    if patientId not in data:
+        raise HTTPException(404, "Patient not found!")
+    
+    del data[patientId]
+
+    saveData(data)
+
+    return JSONResponse(status_code=200, content={"message": "Patient Deleted!"})
